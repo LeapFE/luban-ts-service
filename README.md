@@ -7,9 +7,10 @@ npm i luban-ts-service -D
 ```
 
 ## Usage
-```
+```shell
 // generate config file
 lts init
+
 // generate interface and service function
-lts generate
+lts gen
 ```

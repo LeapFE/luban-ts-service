@@ -1,5 +1,8 @@
 /lib/**
 /test/**
 /node_modules/**
+/bin/**
+/example/**
 commitlint.config.js
+lts.config.js
 

@@ -3,6 +3,8 @@
 # Runtime data
 test
 lib
+example
+lts.config.js
 
 # Dependency directories
 /node_modules

@@ -6,11 +6,11 @@
   "compilerOptions": {
     /* Project Options */
     "declaration": true,
-    "target": "ES5",
+    "target": "ES6",
     "module": "CommonJS",
     "removeComments": true,
-    "rootDir": "./",
     "sourceMap": true,
+    "outDir": "lib",
 
     /* Strict Checks */
     "alwaysStrict": true,
