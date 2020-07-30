@@ -13,6 +13,10 @@
   "env": { "es2017": true, "node": true },
   "rules": {
     "import/prefer-default-export": "off",
-    "no-sync": "off"
+    "no-sync": "off",
+    "no-unused-vars": "off",
+    "no-unused-expressions": "off",
+    "no-process-exit": "off",
+    "class-methods-use-this": "off"
   }
 }

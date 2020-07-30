@@ -38,11 +38,12 @@ async function init() {
         server: "",
         token: "",
         output: "src/service",
-        onlyExtraData: true,
-        dataKey: "data",
-        // context: "",
+        // onlyExtraData: true,
+        // dataKey: "data",
         // categories?: [],
         // onlyInterface?: boolean,
+        // categoriesFileName: [],
+        // requestInstanceName: "request",
       };\n
     `,
   );

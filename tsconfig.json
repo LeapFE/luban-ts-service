@@ -1,6 +1,6 @@
 {
   // More tsconfig info see https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "typings/*"],
   "exclude": ["lib", "node_modules"],
 
   "compilerOptions": {

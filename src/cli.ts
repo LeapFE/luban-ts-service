@@ -2,6 +2,7 @@ import { Command } from "commander";
 import dedent from "dedent";
 
 import { init } from "./init";
+import { Generator } from "./generator";
 
 const program = new Command();
 
@@ -19,7 +20,8 @@ program
   .command("gen")
   .description("generate config file")
   .action(() => {
-    console.log("generate");
+    const generate = new Generator();
+    generate.init();
   });
 
 program.on("--help", () => {
