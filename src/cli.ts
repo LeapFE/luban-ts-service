@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import dedent from "dedent";
+import { log } from "@luban-cli/cli-shared-utils";
 
 import { init } from "./init";
 import { Generator } from "./generator";
@@ -25,8 +26,8 @@ program
   });
 
 program.on("--help", () => {
-  console.log();
-  console.log(
+  log();
+  log(
     `\n${dedent`
       # Usage
         Initial config file: lts init

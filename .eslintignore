@@ -4,6 +4,7 @@
 /bin/**
 /example/**
 /typings/**
+/temp/**
 commitlint.config.js
 lts.config.js
 

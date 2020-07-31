@@ -9,6 +9,8 @@ import { JSONSchema4 } from "json-schema";
  * dataKey: string;  response[dataKey] [data] 的键名
  * output: string;  service 输出目录
  * onlyInterface: boolean;  只输出 interface
+ * requestInstanceName: string;  创建请求实例时的名字
+ * serverEnvName：string;  服务环境变量名称，将作为创建请求实例时的 `baseURL`
  */
 export type Config = {
   _index: number;
@@ -21,6 +23,7 @@ export type Config = {
   dataKey?: string;
   onlyInterface?: boolean;
   requestInstanceName?: string;
+  serverEnvName?: string;
 };
 
 // const tree = {
@@ -47,8 +50,9 @@ export type OutputFileTree = {
       content: string[];
     };
   };
-  index: number;
+  _index: number;
   [filepath: string]:
+    | string
     | number
     | { content: string }
     | {
@@ -59,8 +63,22 @@ export type OutputFileTree = {
 };
 
 export type MultiOutputFileTree = {
-  [id: number]: OutputFileTree;
+  [id: string]: OutputFileTree;
 };
+
+export type OutputFileTreeMap = Map<
+  string,
+  | string
+  | number
+  | { content: string }
+  | {
+      [filepath: string]: {
+        content: string[];
+      };
+    }
+>;
+
+export type MultiOutputFileTreeMap = Map<string, OutputFileTree>;
 
 export enum Method {
   GET = "GET",

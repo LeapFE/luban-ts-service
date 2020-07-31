@@ -1,5 +1,6 @@
 import { createSchema, validate } from "@luban-cli/cli-shared-utils";
 import { Config } from "./types";
+import { Options as PrettierOptions } from "prettier";
 
 const ConfigSchema = createSchema((joi) =>
   joi.object<Config>({
@@ -30,4 +31,14 @@ export const defaultConfig: Config = {
   categories: [],
   categoriesFileName: [],
   requestInstanceName: "request",
+};
+
+export const defaultPrettierConfig: PrettierOptions = {
+  parser: "typescript",
+  trailingComma: "all",
+  printWidth: 100,
+  arrowParens: "always",
+  jsxBracketSameLine: false,
+  endOfLine: "lf",
+  proseWrap: "always",
 };

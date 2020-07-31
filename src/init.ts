@@ -3,7 +3,7 @@ import { prompt } from "inquirer";
 import path from "path";
 import chalk from "chalk";
 import dedent from "dedent";
-import { info } from "@luban-cli/cli-shared-utils";
+import { info, log } from "@luban-cli/cli-shared-utils";
 
 async function init() {
   const cwd = process.cwd();
@@ -25,9 +25,9 @@ async function init() {
     if (!action) {
       return;
     } else if (action === "overwrite") {
-      console.log(`\nRemoving ${chalk.cyan(configFile)}...`);
+      log(`\nRemoving ${chalk.cyan(configFile)}...`);
       await fs.remove(configFile);
-      console.log();
+      log();
     }
   }
 

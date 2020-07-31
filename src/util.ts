@@ -3,8 +3,10 @@ import { isEmpty, random, isObject, isArray, forOwn, castArray } from "vtils";
 import { compile, Options } from "json-schema-to-typescript";
 import jsonSchemaGenerator from "json-schema-generator";
 import Mock from "mockjs";
+import prettier from "prettier";
 
-import { PropDefinitions } from "./types";
+import { PropDefinitions, YapiInterface } from "./types";
+import { defaultPrettierConfig } from "./options";
 
 class FileData<T = any> {
   private originalFileData: T;
@@ -20,15 +22,7 @@ class FileData<T = any> {
 
 const JSTTOptions: Partial<Options> = {
   bannerComment: "",
-  style: {
-    bracketSpacing: false,
-    printWidth: 100,
-    semi: true,
-    singleQuote: false,
-    tabWidth: 2,
-    trailingComma: "all",
-    useTabs: false,
-  },
+  style: defaultPrettierConfig,
 };
 
 export async function jsonSchemaToType(jsonSchema: JSONSchema4, typeName: string): Promise<string> {
@@ -113,4 +107,23 @@ export function jsonToJsonSchema(json: object): JSONSchema4 {
 
 export function mockjsTemplateToJsonSchema(template: object): JSONSchema4 {
   return processJsonSchema(Mock.toJSONSchema(template) as any);
+}
+
+export function prettierContent(params: string): string {
+  return prettier.format(params, defaultPrettierConfig);
+}
+
+export function cleanQueryPath(path: string): string {
+  return path.replace("-", "_").replace(/\.\w+$/, "");
+}
+
+export function getServiceFunctionName(interfaceData: YapiInterface) {
+  const requestMethod = interfaceData.method.toLowerCase();
+  const functionName =
+    requestMethod +
+    cleanQueryPath(interfaceData.path).replace(/(\/)\b(\w)(\w*)/g, (_, __, $2, $3) => {
+      return $2.toUpperCase() + $3.toLowerCase();
+    });
+
+  return functionName;
 }

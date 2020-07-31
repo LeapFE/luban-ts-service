@@ -1,7 +1,7 @@
 {
   // More tsconfig info see https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
   "include": ["src/**/*", "typings/*"],
-  "exclude": ["lib", "node_modules"],
+  "exclude": ["lib", "node_modules", "temp"],
 
   "compilerOptions": {
     /* Project Options */
