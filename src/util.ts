@@ -5,7 +5,7 @@ import jsonSchemaGenerator from "json-schema-generator";
 import Mock from "mockjs";
 import prettier from "prettier";
 
-import { PropDefinitions, YapiInterface } from "./types";
+import { PropDefinitions, YapiInterface, Method, RequestBodyType } from "./types";
 import { defaultPrettierConfig } from "./options";
 
 class FileData<T = any> {
@@ -126,4 +126,35 @@ export function getServiceFunctionName(interfaceData: YapiInterface) {
     });
 
   return functionName;
+}
+
+export function interfaceHasReqQueryOrBody(interfaceData: YapiInterface): boolean {
+  const { method } = interfaceData;
+
+  if (method === Method.GET) {
+    return interfaceData.req_query.length > 0;
+  }
+
+  if (
+    method === Method.POST ||
+    method === Method.PUT ||
+    method === Method.PATCH ||
+    method === Method.DELETE
+  ) {
+    if (interfaceData.req_body_type === RequestBodyType.json) {
+      if (interfaceData.req_body_other === "") {
+        return false;
+      }
+      const req_body_other_schema = JSON.parse(interfaceData.req_body_other);
+      if (typeof req_body_other_schema === "object") {
+        return Object.keys(req_body_other_schema.properties).length > 0;
+      }
+    }
+
+    if (interfaceData.req_body_type === RequestBodyType.form) {
+      return interfaceData.req_body_form.length > 0;
+    }
+  }
+
+  return false;
 }

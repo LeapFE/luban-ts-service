@@ -4,8 +4,7 @@
 test
 lib
 example
-service_1
-service_2
+temp
 lts.config.js
 
 # Dependency directories

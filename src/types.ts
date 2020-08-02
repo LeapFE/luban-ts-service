@@ -5,12 +5,13 @@ import { JSONSchema4 } from "json-schema";
  * server: string;
  * token: string;  项目token
  * categories: string[] | number[];  获取哪些分类；可以是分类名称或者ID；undefined或者空数组表示获取该项目的所有分类
- * onlyExtraData: boolean;  只保留 response.data 的类型定义
- * dataKey: string;  response[dataKey] [data] 的键名
+ * categoriesFileName: string[];  每个分类对应的生成文件名
+ * onlyExtraData: boolean;  只保留 response.data 的类型定义 TODO
+ * dataKey: string;  response[dataKey] [data] 的键名 TODO
  * output: string;  service 输出目录
- * onlyInterface: boolean;  只输出 interface
+ * onlyInterface: boolean;  只输出 interface TODO
  * requestInstanceName: string;  创建请求实例时的名字
- * serverEnvName：string;  服务环境变量名称，将作为创建请求实例时的 `baseURL`
+ * serverEnvName: string;  服务环境变量名称，将作为创建请求实例时的 `baseURL`
  */
 export type Config = {
   _index: number;

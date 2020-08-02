@@ -33,6 +33,7 @@ import {
   mockjsTemplateToJsonSchema,
   prettierContent,
   getServiceFunctionName,
+  interfaceHasReqQueryOrBody,
 } from "./util";
 
 class Generator {
@@ -118,6 +119,7 @@ class Generator {
                     import { ${requestInstanceName} } from "../${requestInstanceName}";
 
                     import * as ${_name} from "../interface/${filename}";
+                    \n
                   `;
 
                     const _content = Array.isArray(content.content)
@@ -245,7 +247,7 @@ class Generator {
       return Promise.resolve("");
     }
 
-    const requestMethod = interfaceData.method.toLowerCase();
+    const requestMethod = interfaceData.method;
     const functionName = getServiceFunctionName(interfaceData);
 
     const _name = fileName.replace(/\b(\w)(\w*)/, (_, $1, $2) => {
@@ -254,18 +256,42 @@ class Generator {
     const queryTypeName = _name + "." + functionName + "Query";
     const dataTypeName = _name + "." + functionName + "Data";
 
+    const hasReqOrBody = interfaceHasReqQueryOrBody(interfaceData);
+
     const query = "${stringify(params)}";
     const queryPath =
-      requestMethod === "get" ? `${interfaceData.path}?${query}` : `${interfaceData.path}`;
+      requestMethod === Method.GET
+        ? hasReqOrBody
+          ? `${interfaceData.path}?${query}`
+          : `${interfaceData.path}`
+        : `${interfaceData.path}`;
+
+    const parameterName = "params";
+    const parameter = hasReqOrBody ? `${parameterName}: ${queryTypeName}` : "";
+
+    const methodParameters =
+      requestMethod !== Method.GET && hasReqOrBody
+        ? interfaceData.req_body_type === RequestBodyType.form
+          ? `\`${queryPath}\`, { data: ${parameterName}, headers: { "Content-Type": "application/x-www-form-urlencoded" } }`
+          : `\`${queryPath}\`, { data: ${parameterName}}`
+        : `\`${queryPath}\``;
+
+    const updatedTime = new Date(interfaceData.up_time * 1000).toLocaleString();
+    const createdTime = new Date(interfaceData.add_time * 100).toLocaleString();
+    const tagList = interfaceData.tag.join(" ");
 
     const singleServiceFunction = dedent`
       /**
        * ${interfaceData.title}
        * @category ${categoryName}
        * @method ${requestMethod}
+       * @status ${interfaceData.status}
+       * @updated ${updatedTime}
+       * @created ${createdTime}
+       * @tag ${tagList}
        */
-      export function ${functionName}(params: ${queryTypeName}) {
-        return ${requestInstanceName}.${requestMethod}<${dataTypeName}>(\`${queryPath}\`);
+      export function ${functionName}(${parameter}) {
+        return ${requestInstanceName}.${requestMethod.toLowerCase()}<${dataTypeName}>(${methodParameters});
       }
       \n
     `;
