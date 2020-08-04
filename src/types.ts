@@ -6,8 +6,6 @@ import { JSONSchema4 } from "json-schema";
  * token: string;  项目token
  * categories: string[] | number[];  获取哪些分类；可以是分类名称或者ID；undefined或者空数组表示获取该项目的所有分类
  * categoriesFileName: string[];  每个分类对应的生成文件名
- * onlyExtraData: boolean;  只保留 response.data 的类型定义 TODO
- * dataKey: string;  response[dataKey] [data] 的键名 TODO
  * output: string;  service 输出目录
  * onlyInterface: boolean;  只输出 interface TODO
  * requestInstanceName: string;  创建请求实例时的名字
@@ -20,8 +18,6 @@ export type Config = {
   output: string;
   categories?: string[];
   categoriesFileName?: string[];
-  onlyExtraData?: boolean;
-  dataKey?: string;
   onlyInterface?: boolean;
   requestInstanceName?: string;
   serverEnvName?: string;

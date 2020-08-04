@@ -7,6 +7,7 @@ import { stringify } from "qs";
 import dedent from "dedent";
 import { JSONSchema4 } from "json-schema";
 import JSON5 from "json5";
+import { prompt } from "inquirer";
 
 import {
   Config,
@@ -49,14 +50,40 @@ class Generator {
   }
 
   public async init(): Promise<void> {
+    const existOutPutDirList = this.config
+      .filter((config) => fs.pathExistsSync(config.output))
+      .map((config) => config.output);
+
+    if (existOutPutDirList.length > 0) {
+      const { action } = await prompt([
+        {
+          name: "action",
+          type: "list",
+          message: `output dir ${chalk.cyan(
+            existOutPutDirList.join(", "),
+          )} already exists. Pick an action:`,
+          choices: [
+            { name: "Merge", value: "merge" },
+            { name: "Overwrite", value: "overwrite" },
+            { name: "Cancel", value: false },
+          ],
+        },
+      ]);
+
+      if (!action) {
+        return;
+      } else if (action === "overwrite") {
+        log(`\nRemoving ${chalk.cyan(existOutPutDirList.join(", "))}...`);
+        await Promise.all(existOutPutDirList.map(async (dir) => await fs.remove(dir)));
+      }
+    }
+
     const spinner = new Spinner();
 
     log();
     spinner.logWithSpinner("🏗", "Generating code...\n");
     const outputFileTree = await this.generate();
     spinner.stopSpinner();
-
-    // log();
 
     spinner.logWithSpinner("✍️", "writing...");
     await this.write(outputFileTree);
@@ -81,7 +108,7 @@ class Generator {
             return;
           }
 
-          const output = config.output;
+          const { output, onlyInterface } = config;
 
           const treeMap = new Map(Object.entries(tree));
 
@@ -102,6 +129,10 @@ class Generator {
                   `${this.context}/${output}/${dir}.ts`,
                   prettierContent(files.content),
                 );
+              }
+
+              if (onlyInterface && dir === "api") {
+                return;
               }
 
               if (dir === "api" || dir === "interface") {
@@ -158,9 +189,11 @@ class Generator {
       const requestInstanceName = configItem.requestInstanceName || `request_${order}`;
       const requestInstanceServerEnvName =
         configItem.serverEnvName ||
-        `request_server_url${configItem.output.replace(/(\/)\b(\w)(\w*)/g, (_, __, $2, $3) => {
-          return "_" + $2.toLowerCase() + $3.toLowerCase();
-        })}`;
+        `request_server_url${configItem.output
+          .replace(/^([^/])/, "/$1")
+          .replace(/(\/)\b(\w)(\w*)/g, (_, __, $2, $3) => {
+            return "_" + $2.toLowerCase() + $3.toLowerCase();
+          })}`;
 
       const projectData = await this.getProjectData(server, token);
 
@@ -196,7 +229,7 @@ class Generator {
       await Promise.all(
         filteredCategoryList.map(async (c, i) => {
           const categoryFileName = Array.isArray(configItem.categoriesFileName)
-            ? configItem.categoriesFileName[i]
+            ? configItem.categoriesFileName[i] || `category_${i}`
             : `category_${i}`;
 
           const interfaceList = await this.getInterfaceList(server, token, c._id);
@@ -277,7 +310,7 @@ class Generator {
         : `\`${queryPath}\``;
 
     const updatedTime = new Date(interfaceData.up_time * 1000).toLocaleString();
-    const createdTime = new Date(interfaceData.add_time * 100).toLocaleString();
+    const createdTime = new Date(interfaceData.add_time * 1000).toLocaleString();
     const tagList = interfaceData.tag.join(" ");
 
     const singleServiceFunction = dedent`
@@ -330,7 +363,7 @@ class Generator {
     const requestInstanceCode = dedent`
       import axios from "axios";
 
-      import { ${serverEnvName} } from "../environments/env";
+      import { ${serverEnvName} } from "@/environments/env";
 
       const ${instanceName} = axios.create({ baseURL: ${serverEnvName} });
 
@@ -465,7 +498,8 @@ class Generator {
             if (interfaceInfo.req_body_other) {
               jsonSchema = interfaceInfo.req_body_is_json_schema
                 ? jsonSchemaStringToJsonSchema(interfaceInfo.req_body_other)
-                : jsonToJsonSchema(JSON5.parse(interfaceInfo.req_body_other));
+                : // TODO catch json parse error
+                  jsonToJsonSchema(JSON5.parse(interfaceInfo.req_body_other));
             }
             break;
           default:
@@ -514,7 +548,8 @@ class Generator {
         if (interfaceInfo.res_body) {
           jsonSchema = interfaceInfo.res_body_is_json_schema
             ? jsonSchemaStringToJsonSchema(interfaceInfo.res_body)
-            : mockjsTemplateToJsonSchema(JSON5.parse(interfaceInfo.res_body));
+            : // // TODO catch json parse error
+              mockjsTemplateToJsonSchema(JSON5.parse(interfaceInfo.res_body));
         }
         break;
       default:

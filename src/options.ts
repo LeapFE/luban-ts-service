@@ -9,10 +9,9 @@ const ConfigSchema = createSchema((joi) =>
     output: joi.string().required(),
     categories: joi.array(),
     categoriesFileName: joi.array(),
-    onlyExtraData: joi.bool(),
-    dataKey: joi.string(),
     onlyInterface: joi.bool(),
     requestInstanceName: joi.string(),
+    serverEnvName: joi.string(),
   }),
 );
 
@@ -25,12 +24,11 @@ export const defaultConfig: Config = {
   server: "",
   token: "",
   output: "",
-  onlyExtraData: false,
   onlyInterface: false,
-  dataKey: "",
   categories: [],
   categoriesFileName: [],
   requestInstanceName: "request",
+  serverEnvName: "",
 };
 
 export const defaultPrettierConfig: PrettierOptions = {

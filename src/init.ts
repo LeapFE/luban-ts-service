@@ -9,7 +9,7 @@ async function init() {
   const cwd = process.cwd();
   const configFile = path.resolve(cwd, "lts.config.js");
 
-  if (fs.existsSync(configFile)) {
+  if (fs.pathExistsSync(configFile)) {
     const { action } = await prompt([
       {
         name: "action",
@@ -38,12 +38,11 @@ async function init() {
         server: "",
         token: "",
         output: "src/service",
-        // onlyExtraData: true,
-        // dataKey: "data",
-        // categories?: [],
-        // onlyInterface?: boolean,
+        // categories: [],
         // categoriesFileName: [],
-        // requestInstanceName: "request",
+        // onlyInterface: false,
+        // requestInstanceName: "",
+        // serverEnvName: "",
       };\n
     `,
   );

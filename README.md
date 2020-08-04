@@ -22,7 +22,7 @@ module.exports = { }
 // or
 module.exports = [];
 ```
-对象或数组中的项应满足下面的 `Config` 类型：
+对象或数组的项应满足下面的 `Config` 类型：
 
 ```typescript
 type Config = {
@@ -36,10 +36,6 @@ type Config = {
   categories?: string[];
   // 每个分类对应的生成文件名
   categoriesFileName?: string[];
-  // 只保留 response.data 的类型定义 TODO
-  onlyExtraData?: boolean;
-  // response[dataKey] [data] 的键名 TODO
-  dataKey?: string;
   // 只输出 interface TODO
   onlyInterface?: boolean;
   // 创建请求实例时的名字

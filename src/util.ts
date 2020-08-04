@@ -8,18 +8,6 @@ import prettier from "prettier";
 import { PropDefinitions, YapiInterface, Method, RequestBodyType } from "./types";
 import { defaultPrettierConfig } from "./options";
 
-class FileData<T = any> {
-  private originalFileData: T;
-
-  public constructor(originalFileData: T) {
-    this.originalFileData = originalFileData;
-  }
-
-  public getOriginalFileData(): T {
-    return this.originalFileData;
-  }
-}
-
 const JSTTOptions: Partial<Options> = {
   bannerComment: "",
   style: defaultPrettierConfig,
@@ -88,7 +76,7 @@ export function propDefinitionsToJsonSchema(propDefinitions: PropDefinitions): J
         res[prop.name] = {
           type: prop.type,
           description: prop.comment,
-          ...(prop.type === ("file" as any) ? { tsType: FileData.name } : {}),
+          ...(prop.type === ("file" as any) ? { tsType: "File" } : {}),
         };
         return res;
       },
@@ -114,7 +102,22 @@ export function prettierContent(params: string): string {
 }
 
 export function cleanQueryPath(path: string): string {
-  return path.replace("-", "_").replace(/\.\w+$/, "");
+  return (
+    path
+      // /path/user-list?{name}
+      .replace(/\?(.+)/, "")
+      // /path/user-list/
+      .replace("-", "_")
+      .replace(/\.\w+$/, "")
+      // /path/user/{name}
+      .replace(/(\{\w+\})/g, "")
+      // eg /path//user///list
+      .replace(/[(^/)](\/)+/g, "$1")
+      // /path/v1.1/user/2.2/
+      .replace(/[(^\w+)](\d+)[(.)][(\d+)]/g, ($1) => {
+        return $1.replace(/\./g, "_");
+      })
+  );
 }
 
 export function getServiceFunctionName(interfaceData: YapiInterface) {
