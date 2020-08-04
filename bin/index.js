@@ -1,10 +1,10 @@
 "use strict";
 
-const semver = require("semver");
-const requiredVersion = require("../package.json").engines.node;
+var semver = require("semver");
+var requiredVersion = require("../package.json").engines.node;
 
 if (!semver.satisfies(process.version, requiredVersion)) {
-  error(
+  console.error(
     `You are using Node ${process.version}, but luban-ts-service ` +
       `requires Node ${requiredVersion}.\nPlease upgrade your Node version.`,
   );
