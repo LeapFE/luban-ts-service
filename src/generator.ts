@@ -125,10 +125,12 @@ class Generator {
                 typeof files !== "number" &&
                 typeof files.content === "string"
               ) {
-                await fs.outputFile(
-                  `${this.context}/${output}/${dir}.ts`,
-                  prettierContent(files.content),
-                );
+                if (!fs.pathExistsSync(`${this.context}/${output}/${dir}.ts`)) {
+                  await fs.outputFile(
+                    `${this.context}/${output}/${dir}.ts`,
+                    prettierContent(files.content),
+                  );
+                }
               }
 
               if (onlyInterface && dir === "api") {
