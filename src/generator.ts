@@ -200,6 +200,7 @@ class Generator {
       const projectData = await this.getProjectData(server, token);
 
       const projectId = projectData._id.toString();
+      const projectBasePath = projectData.basepath;
 
       outputFileTree[projectId] = {
         _output: configItem.output,
@@ -251,6 +252,7 @@ class Generator {
                 requestInstanceName,
                 interfaceData,
                 categoryFileName,
+                projectBasePath,
               );
 
               return { interfaceCode, serviceFunctions };
@@ -277,6 +279,7 @@ class Generator {
     requestInstanceName: string,
     interfaceData: YapiInterface,
     fileName: string,
+    projectBasePath: string,
   ): Promise<string> {
     if (interfaceData.path === "/") {
       return Promise.resolve("");
@@ -293,13 +296,15 @@ class Generator {
 
     const hasReqOrBody = interfaceHasReqQueryOrBody(interfaceData);
 
+    const fullPath = `${projectBasePath}${interfaceData.path}`;
+
     const query = "${stringify(params)}";
     const queryPath =
       requestMethod === Method.GET
         ? hasReqOrBody
-          ? `${interfaceData.path}?${query}`
-          : `${interfaceData.path}`
-        : `${interfaceData.path}`;
+          ? `${fullPath}?${query}`
+          : `${fullPath}`
+        : `${fullPath}`;
 
     const parameterName = "params";
     const parameter = hasReqOrBody ? `${parameterName}: ${queryTypeName}` : "";
