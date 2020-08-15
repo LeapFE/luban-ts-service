@@ -312,8 +312,8 @@ class Generator {
     const methodParameters =
       requestMethod !== Method.GET && hasReqOrBody
         ? interfaceData.req_body_type === RequestBodyType.form
-          ? `\`${queryPath}\`, { data: ${parameterName}, headers: { "Content-Type": "application/x-www-form-urlencoded" } }`
-          : `\`${queryPath}\`, { data: ${parameterName}}`
+          ? `\`${queryPath}\`, null, { data: ${parameterName}, headers: { "Content-Type": "application/x-www-form-urlencoded" } }`
+          : `\`${queryPath}\`, null, { data: ${parameterName}}`
         : `\`${queryPath}\``;
 
     const updatedTime = new Date(interfaceData.up_time * 1000).toLocaleString();
