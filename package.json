@@ -1,6 +1,6 @@
 {
   "name": "luban-ts-service",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "generate typescript interface and service function/class on yapi doc",
   "main": "lib/index.js",
   "module": "lib/index.js",
