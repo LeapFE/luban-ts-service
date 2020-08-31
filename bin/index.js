@@ -1,4 +1,6 @@
-"use strict";
+#!/usr/bin/env node
+
+'use strict';
 
 var semver = require("semver");
 var requiredVersion = require("../package.json").engines.node;
