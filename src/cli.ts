@@ -19,7 +19,7 @@ program
 
 program
   .command("gen")
-  .description("generate config file")
+  .description("generate interface and service functions")
   .action(() => {
     const generate = new Generator();
     generate.init();
@@ -31,9 +31,9 @@ program.on("--help", () => {
     `\n${dedent`
       # Usage
         Initial config file: lts init
-        generate code: lts
-        check version: lts version
-        help: lts help
+        Generate code: lts gen
+        Check version: lts version
+        Help: lts help
 
       # GitHub
         https://github.com/LeapFE/luban-ts-service#readme

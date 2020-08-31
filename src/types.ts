@@ -7,7 +7,7 @@ import { JSONSchema4 } from "json-schema";
  * categories: string[] | number[];  获取哪些分类；可以是分类名称或者ID；undefined或者空数组表示获取该项目的所有分类
  * categoriesFileName: string[];  每个分类对应的生成文件名
  * output: string;  service 输出目录
- * onlyInterface: boolean;  只输出 interface TODO
+ * onlyInterface: boolean;  只输出 interface
  * requestInstanceName: string;  创建请求实例时的名字
  * serverEnvName: string;  服务环境变量名称，将作为创建请求实例时的 `baseURL`
  */
