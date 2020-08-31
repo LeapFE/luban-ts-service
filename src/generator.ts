@@ -316,13 +316,13 @@ class Generator {
           : `\`${queryPath}\`, null, { data: ${parameterName}}`
         : `\`${queryPath}\``;
 
-    const updatedTime = new Date(interfaceData.up_time * 1000).toLocaleString();
-    const createdTime = new Date(interfaceData.add_time * 1000).toLocaleString();
+    const updatedTime = new Date(interfaceData.up_time * 1000).toString();
+    const createdTime = new Date(interfaceData.add_time * 1000).toString();
     const tagList = interfaceData.tag.join(" ");
 
     const singleServiceFunction = dedent`
       /**
-       * ${interfaceData.title}
+       * @description ${interfaceData.title}
        * @category ${categoryName}
        * @method ${requestMethod}
        * @status ${interfaceData.status}
