@@ -15,11 +15,11 @@
     "eslint": "eslint src/**/*.ts",
     "compile": "tsc --noEmit --diagnostics",
     "format": "prettier --write src/**/*.{ts,tsx}",
-    "pre:release": "npm run clean && npm run format && npm run eslint",
-    "prepublishOnly": "npm run build",
     "build": "rimraf lib && cross-env NODE_ENV=production tsc --pretty",
     "watch": "npm run build -- --watch --diagnostics",
-    "gen": "node bin/index.js gen"
+    "gen": "node bin/index.js gen",
+    "release:beta": "togo-np prerelease --tag beta --run-scripts 'eslint build' --allow-any-branch",
+    "release": "togo-np patch --tag latest --run-scripts 'eslint build' --branch main"
   },
   "dependencies": {
     "@luban-cli/cli-shared-utils": "^1.3.3",
@@ -61,6 +61,7 @@
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
     "rimraf": "^3.0.2",
+    "togo-np": "0.0.12",
     "typescript": "^3.8.3"
   },
   "optionalDependencies": {
@@ -100,5 +101,9 @@
   },
   "engines": {
     "node": ">=10"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }
