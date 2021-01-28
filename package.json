@@ -14,10 +14,12 @@
   "scripts": {
     "eslint": "eslint src/**/*.ts",
     "compile": "tsc --noEmit --diagnostics",
-    "format": "prettier --write src/**/*.{ts,tsx}",
+    "format": "prettier --write 'src/**/*.ts'",
+    "format:check": "prettier --check 'src/**/*.ts'",
     "build": "rimraf lib && cross-env NODE_ENV=production tsc --pretty",
     "watch": "npm run build -- --watch --diagnostics",
     "gen": "node bin/index.js gen",
+    "commit": "lint-staged && git-cz",
     "release:beta": "togo-np prerelease --tag beta --run-scripts 'eslint build' --allow-any-branch",
     "release": "togo-np patch --tag latest --run-scripts 'eslint build' --branch master"
   },
@@ -80,7 +82,7 @@
   "bugs": {
     "url": "https://github.com/LeapFE/luban-ts-service/issues"
   },
-  "homepage": "https://github.com/LeapFE/luban-ts-service#readme",
+  "homepage": "https://github.com/LeapFE/luban-ts-service/blob/master/README.md",
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -88,9 +90,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
