@@ -21,7 +21,7 @@
     "gen": "node bin/index.js gen",
     "commit": "lint-staged && git-cz",
     "release:beta": "togo-np prerelease --tag beta --run-scripts 'eslint build' --allow-any-branch",
-    "release": "togo-np patch --tag latest --run-scripts 'eslint build' --branch master"
+    "release": "togo-np --tag latest --run-scripts 'eslint build' --branch master"
   },
   "dependencies": {
     "@luban-cli/cli-shared-utils": "^1.3.3",
