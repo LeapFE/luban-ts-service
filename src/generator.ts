@@ -95,8 +95,6 @@ class Generator {
   }
 
   private write(multiOutputFileTreeMap: MultiOutputFileTreeMap): Promise<void[]> {
-    // debugger;
-
     return Promise.all(
       Array.from(multiOutputFileTreeMap)
         .reverse()
@@ -118,9 +116,15 @@ class Generator {
             Array.from(treeMap).map(async (treeItem) => {
               const [dir, files] = treeItem;
 
+              const notGenInterface =
+                (onlyInterface && dir === requestInstanceName) || (onlyInterface && dir === "api");
+
+              if (notGenInterface) {
+                return;
+              }
+
               if (
-                dir !== "api" &&
-                dir !== "interface" &&
+                dir === requestInstanceName &&
                 typeof files === "object" &&
                 typeof files !== "number" &&
                 typeof files.content === "string"
@@ -131,10 +135,6 @@ class Generator {
                     prettierContent(files.content),
                   );
                 }
-              }
-
-              if (onlyInterface && dir === "api") {
-                return;
               }
 
               if (dir === "api" || dir === "interface") {
