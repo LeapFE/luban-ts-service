@@ -19,7 +19,7 @@
     "watch": "npm run build -- --watch --diagnostics",
     "gen": "node bin/index.js gen",
     "release:beta": "togo-np prerelease --tag beta --run-scripts 'eslint build' --allow-any-branch",
-    "release": "togo-np patch --tag latest --run-scripts 'eslint build' --branch main"
+    "release": "togo-np patch --tag latest --run-scripts 'eslint build' --branch master"
   },
   "dependencies": {
     "@luban-cli/cli-shared-utils": "^1.3.3",
