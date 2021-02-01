@@ -110,21 +110,24 @@ class Generator {
 
           const treeMap = new Map(Object.entries(tree));
 
-          const requestInstanceName = config.requestInstanceName || `request_${index}`;
+          const configRequestInstanceName = config.requestInstanceName;
+          const defaultRequestInstanceName = `request_${index}`;
+          const requestInstanceName = configRequestInstanceName || defaultRequestInstanceName;
 
           await Promise.all(
             Array.from(treeMap).map(async (treeItem) => {
               const [dir, files] = treeItem;
 
               const notGenInterface =
-                (onlyInterface && dir === requestInstanceName) || (onlyInterface && dir === "api");
+                (onlyInterface && dir === defaultRequestInstanceName) ||
+                (onlyInterface && dir === "api");
 
               if (notGenInterface) {
                 return;
               }
 
               if (
-                dir === requestInstanceName &&
+                dir === configRequestInstanceName &&
                 typeof files === "object" &&
                 typeof files !== "number" &&
                 typeof files.content === "string"
@@ -136,6 +139,12 @@ class Generator {
                   );
                 }
               }
+
+              const importInstance =
+                config.importInstance && config.importInstance(requestInstanceName);
+              const importInstanceStatement =
+                importInstance ||
+                `import { ${requestInstanceName} } from "../${requestInstanceName}"`;
 
               if (dir === "api" || dir === "interface") {
                 const fileList = Object.entries(files);
@@ -149,7 +158,7 @@ class Generator {
                     const importContent = dedent`
                     import { stringify } from "qs";
 
-                    import { ${requestInstanceName} } from "../${requestInstanceName}";
+                    ${importInstanceStatement};
 
                     import * as ${_name} from "../interface/${filename}";
                     \n
@@ -242,6 +251,11 @@ class Generator {
             return;
           }
 
+          const customRenderCallee =
+            typeof configItem.renderCallee === "function"
+              ? configItem.renderCallee()
+              : configItem.renderCallee;
+
           const codeList = await Promise.all(
             interfaceList.list.map(async (inter) => {
               const interfaceData = await this.getInterfaceData(server, token, inter._id);
@@ -253,6 +267,7 @@ class Generator {
                 interfaceData,
                 categoryFileName,
                 projectBasePath,
+                customRenderCallee,
               );
 
               return { interfaceCode, serviceFunctions };
@@ -280,6 +295,7 @@ class Generator {
     interfaceData: YapiInterface,
     fileName: string,
     projectBasePath: string,
+    customRenderCallee?: string,
   ): Promise<string> {
     if (interfaceData.path === "/") {
       return Promise.resolve("");
@@ -320,6 +336,8 @@ class Generator {
     const createdTime = new Date(interfaceData.add_time * 1000).toString();
     const tagList = interfaceData.tag.join(" ");
 
+    const callee = customRenderCallee || `${requestInstanceName}.${requestMethod.toLowerCase()}`;
+
     const singleServiceFunction = dedent`
       /**
        * @description ${interfaceData.title}
@@ -331,7 +349,7 @@ class Generator {
        * @tag ${tagList}
        */
       export function ${functionName}(${parameter}) {
-        return ${requestInstanceName}.${requestMethod.toLowerCase()}<${dataTypeName}>(${methodParameters});
+        return ${callee}<${dataTypeName}>(${methodParameters});
       }
       \n
     `;
