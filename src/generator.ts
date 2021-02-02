@@ -24,6 +24,7 @@ import {
   RequestFormItemType,
   ResponseBodyType,
   MultiOutputFileTreeMap,
+  renderServiceFuncReturn,
 } from "./types";
 import { defaultConfig, validateConfig } from "./options";
 import {
@@ -141,7 +142,8 @@ class Generator {
               }
 
               const importInstance =
-                config.importInstance && config.importInstance(requestInstanceName);
+                config.renderImportInstance && config.renderImportInstance(requestInstanceName);
+
               const importInstanceStatement =
                 importInstance ||
                 `import { ${requestInstanceName} } from "../${requestInstanceName}"`;
@@ -251,11 +253,6 @@ class Generator {
             return;
           }
 
-          const customRenderCallee =
-            typeof configItem.renderCallee === "function"
-              ? configItem.renderCallee()
-              : configItem.renderCallee;
-
           const codeList = await Promise.all(
             interfaceList.list.map(async (inter) => {
               const interfaceData = await this.getInterfaceData(server, token, inter._id);
@@ -267,7 +264,7 @@ class Generator {
                 interfaceData,
                 categoryFileName,
                 projectBasePath,
-                customRenderCallee,
+                configItem.renderServiceFuncReturn,
               );
 
               return { interfaceCode, serviceFunctions };
@@ -295,7 +292,7 @@ class Generator {
     interfaceData: YapiInterface,
     fileName: string,
     projectBasePath: string,
-    customRenderCallee?: string,
+    renderServiceFuncReturn?: renderServiceFuncReturn,
   ): Promise<string> {
     if (interfaceData.path === "/") {
       return Promise.resolve("");
@@ -336,7 +333,12 @@ class Generator {
     const createdTime = new Date(interfaceData.add_time * 1000).toString();
     const tagList = interfaceData.tag.join(" ");
 
-    const callee = customRenderCallee || `${requestInstanceName}.${requestMethod.toLowerCase()}`;
+    const defaultCallee = `${requestInstanceName}.${requestMethod.toLowerCase()}<${dataTypeName}>(${methodParameters})`;
+
+    const callee =
+      typeof renderServiceFuncReturn === "function"
+        ? renderServiceFuncReturn(fullPath, requestMethod.toLowerCase(), dataTypeName)
+        : defaultCallee;
 
     const singleServiceFunction = dedent`
       /**
@@ -349,7 +351,7 @@ class Generator {
        * @tag ${tagList}
        */
       export function ${functionName}(${parameter}) {
-        return ${callee}<${dataTypeName}>(${methodParameters});
+        return ${callee};
       }
       \n
     `;

@@ -1,7 +1,7 @@
 import { JSONSchema4 } from "json-schema";
 
 type renderImportInstance = (name: string) => string;
-type renderCallee = () => string;
+export type renderServiceFuncReturn = (url: string, method: string, typeString: string) => string;
 
 /**
  * module.exports = { } / module.exports = [];
@@ -24,8 +24,8 @@ export type Config = {
   onlyInterface?: boolean;
   requestInstanceName?: string;
   serverEnvName?: string;
-  importInstance?: renderImportInstance;
-  renderCallee?: renderCallee | string;
+  renderImportInstance?: renderImportInstance;
+  renderServiceFuncReturn?: renderServiceFuncReturn;
 };
 
 // const tree = {
