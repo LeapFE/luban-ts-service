@@ -374,9 +374,15 @@ class Generator {
     const queryType = dedent`
       /**
        * ${interfaceData.title}
+       * @kind parameters
        * @category ${categoryName}
        */
       ${requestDataType};
+      /**
+       * ${interfaceData.title}
+       * @kind response
+       * @category ${categoryName}
+       */
       ${responseDataType};
       \n
     `;
