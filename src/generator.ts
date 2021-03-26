@@ -244,9 +244,24 @@ class Generator {
 
       await Promise.all(
         filteredCategoryList.map(async (c, i) => {
-          const categoryFileName = Array.isArray(configItem.categoriesFileName)
-            ? configItem.categoriesFileName[i] || `category_${i}`
-            : `category_${i}`;
+          let isCurrentCategoryFileNameSameAsPrevious = false;
+
+          if (Array.isArray(configItem.categoriesFileName)) {
+            if (i > 0) {
+              isCurrentCategoryFileNameSameAsPrevious =
+                configItem.categoriesFileName[i] === configItem.categoriesFileName[i - 1];
+            }
+          }
+
+          let categoryFileName = `category_${i}`;
+
+          if (Array.isArray(configItem.categoriesFileName)) {
+            if (isCurrentCategoryFileNameSameAsPrevious) {
+              categoryFileName = configItem.categoriesFileName[i - 1] || `category_${i}`;
+            } else {
+              categoryFileName = configItem.categoriesFileName[i] || `category_${i}`;
+            }
+          }
 
           const interfaceList = await this.getInterfaceList(server, token, c._id);
 
@@ -280,12 +295,28 @@ class Generator {
             }),
           );
 
-          outputFileTree[projectId].api[categoryFileName] = {
-            content: codeList.map((c) => c.serviceFunctions),
+          let currentApiCategoryFile = outputFileTree[projectId].api[categoryFileName];
+          let currentInterfaceCategoryFile = outputFileTree[projectId].interface[categoryFileName];
+
+          const _apiContent =
+            currentApiCategoryFile && Array.isArray(currentApiCategoryFile.content)
+              ? currentApiCategoryFile.content.concat(codeList.map((c) => c.serviceFunctions))
+              : codeList.map((c) => c.serviceFunctions);
+
+          const _interfaceContent =
+            currentInterfaceCategoryFile && Array.isArray(currentInterfaceCategoryFile.content)
+              ? currentInterfaceCategoryFile.content.concat(codeList.map((c) => c.interfaceCode))
+              : codeList.map((c) => c.interfaceCode);
+
+          currentApiCategoryFile = {
+            content: _apiContent,
           };
-          outputFileTree[projectId].interface[categoryFileName] = {
-            content: codeList.map((c) => c.interfaceCode),
+          currentInterfaceCategoryFile = {
+            content: _interfaceContent,
           };
+
+          outputFileTree[projectId].api[categoryFileName] = currentApiCategoryFile;
+          outputFileTree[projectId].interface[categoryFileName] = currentInterfaceCategoryFile;
         }),
       );
     });
