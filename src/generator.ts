@@ -180,10 +180,12 @@ class Generator {
                     /* prettier-ignore-end */
                   `}\n`;
 
-                    await fs.outputFile(
-                      `${this.context}/${output}/${dir}/${filename}.ts`,
-                      prettierContent(finalContent),
-                    );
+                    if (_content.trim()) {
+                      await fs.outputFile(
+                        `${this.context}/${output}/${dir}/${filename}.ts`,
+                        prettierContent(finalContent),
+                      );
+                    }
                   }),
                 );
               }
@@ -257,14 +259,21 @@ class Generator {
             interfaceList.list.map(async (inter) => {
               const interfaceData = await this.getInterfaceData(server, token, inter._id);
 
-              const interfaceCode = await this.generateInterfaceCode(c.name, interfaceData);
+              const interfaceCode = await this.generateInterfaceCode(
+                c.name,
+                interfaceData,
+                projectBasePath,
+                configItem.filterServiceFunc,
+              );
               const serviceFunctions = await this.generateServiceFunction(
                 c.name,
                 requestInstanceName,
                 interfaceData,
                 categoryFileName,
                 projectBasePath,
+                projectBasePath,
                 configItem.renderServiceFuncReturn,
+                configItem.filterServiceFunc,
               );
 
               return { interfaceCode, serviceFunctions };
@@ -292,9 +301,11 @@ class Generator {
     interfaceData: YapiInterface,
     fileName: string,
     projectBasePath: string,
+    basepath: string,
     renderServiceFuncReturn?: renderServiceFuncReturn,
+    filterServiceFunc: (path: string) => boolean = () => true,
   ): Promise<string> {
-    if (interfaceData.path === "/") {
+    if (interfaceData.path === "/" || !filterServiceFunc(`${basepath}${interfaceData.path}`)) {
       return Promise.resolve("");
     }
 
@@ -361,8 +372,10 @@ class Generator {
   private async generateInterfaceCode(
     categoryName: string,
     interfaceData: YapiInterface,
+    basepath: string,
+    filterServiceFunc: (path: string) => boolean = () => true,
   ): Promise<string> {
-    if (interfaceData.path === "/") {
+    if (interfaceData.path === "/" || !filterServiceFunc(`${basepath}${interfaceData.path}`)) {
       return Promise.resolve("");
     }
 

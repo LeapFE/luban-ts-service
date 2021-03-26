@@ -13,9 +13,12 @@ export type renderServiceFuncReturn = (url: string, method: string, typeString: 
  * onlyInterface: boolean;  只输出 interface
  * requestInstanceName: string;  创建请求实例时的名字
  * serverEnvName: string;  服务环境变量名称，将作为创建请求实例时的 `baseURL`
+ * renderImportInstance: Function; 指定如何生成导入请求实例的语句
+ * renderServiceFuncReturn: Function; 指定如何生成每个 service function 的 return 部分
+ * filterServiceFunc: Function; 过滤不需要的 service function
  */
 export type Config = {
-  _index: number;
+  _index?: number;
   server: string;
   token: string;
   output: string;
@@ -26,6 +29,7 @@ export type Config = {
   serverEnvName?: string;
   renderImportInstance?: renderImportInstance;
   renderServiceFuncReturn?: renderServiceFuncReturn;
+  filterServiceFunc?: (path: string) => boolean;
 };
 
 // const tree = {

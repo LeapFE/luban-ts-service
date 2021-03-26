@@ -128,7 +128,7 @@ export function getServiceFunctionName(interfaceData: YapiInterface) {
       return $2.toUpperCase() + $3.toLowerCase();
     });
 
-  return functionName;
+  return functionName.trim();
 }
 
 export function interfaceHasReqQueryOrBody(interfaceData: YapiInterface): boolean {
