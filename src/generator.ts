@@ -243,7 +243,7 @@ class Generator {
       };
 
       await Promise.all(
-        filteredCategoryList.map(async (c, i) => {
+        filteredCategoryList.map(async (category, i) => {
           let isCurrentCategoryFileNameSameAsPrevious = false;
 
           if (Array.isArray(configItem.categoriesFileName)) {
@@ -263,10 +263,10 @@ class Generator {
             }
           }
 
-          const interfaceList = await this.getInterfaceList(server, token, c._id);
+          const interfaceList = await this.getInterfaceList(server, token, category._id);
 
           if (interfaceList.list.length === 0) {
-            info(`There is no interface to generate [${c.name}]`);
+            info(`There is no interface to generate [${category.name}]`);
             return;
           }
 
@@ -275,18 +275,20 @@ class Generator {
               const interfaceData = await this.getInterfaceData(server, token, inter._id);
 
               const interfaceCode = await this.generateInterfaceCode(
-                c.name,
+                category.name,
                 interfaceData,
                 projectBasePath,
+                server,
                 configItem.filterServiceFunc,
               );
               const serviceFunctions = await this.generateServiceFunction(
-                c.name,
+                category.name,
                 requestInstanceName,
                 interfaceData,
                 categoryFileName,
                 projectBasePath,
                 projectBasePath,
+                server,
                 configItem.renderServiceFuncReturn,
                 configItem.filterServiceFunc,
               );
@@ -333,6 +335,7 @@ class Generator {
     fileName: string,
     projectBasePath: string,
     basepath: string,
+    serverHost: string,
     renderServiceFuncReturn?: renderServiceFuncReturn,
     filterServiceFunc: (path: string) => boolean = () => true,
   ): Promise<string> {
@@ -382,6 +385,8 @@ class Generator {
         ? renderServiceFuncReturn(fullPath, requestMethod.toLowerCase(), dataTypeName)
         : defaultCallee;
 
+    const link = `${serverHost}/project/${interfaceData.project_id}/interface/api/${interfaceData._id}`;
+
     const singleServiceFunction = dedent`
       /**
        * @description ${interfaceData.title}
@@ -391,6 +396,7 @@ class Generator {
        * @updated ${updatedTime}
        * @created ${createdTime}
        * @tag ${tagList}
+       * @see ${link}
        */
       export function ${functionName}(${parameter}) {
         return ${callee};
@@ -404,6 +410,7 @@ class Generator {
     categoryName: string,
     interfaceData: YapiInterface,
     basepath: string,
+    serverHost: string,
     filterServiceFunc: (path: string) => boolean = () => true,
   ): Promise<string> {
     if (interfaceData.path === "/" || !filterServiceFunc(`${basepath}${interfaceData.path}`)) {
@@ -415,17 +422,22 @@ class Generator {
     const dataTypeName = functionName + "Data";
     const requestDataType = await this.generateRequestDataType(interfaceData, queryTypeName);
     const responseDataType = await this.generateResponseDataType(interfaceData, dataTypeName);
+
+    const link = `${serverHost}/project/${interfaceData.project_id}/interface/api/${interfaceData._id}`;
+
     const queryType = dedent`
       /**
        * ${interfaceData.title}
        * @kind parameters
        * @category ${categoryName}
+       * @see ${link}
        */
       ${requestDataType};
       /**
        * ${interfaceData.title}
        * @kind response
        * @category ${categoryName}
+       * @see ${link}
        */
       ${responseDataType};
       \n
