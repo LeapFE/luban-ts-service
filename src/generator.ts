@@ -102,7 +102,7 @@ class Generator {
         .map(async (singleTree, index) => {
           const [, tree] = singleTree;
 
-          const config = this.config.find((c) => c.output === tree._output);
+          const config = this.config.find((_, index) => index === tree._index);
           if (!config) {
             return;
           }
