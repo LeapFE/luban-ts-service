@@ -159,6 +159,7 @@ class Generator {
 
                     const importContent = dedent`
                     import { stringify } from "qs";
+                    import { AxiosRequestConfig } from "axios";
 
                     ${importInstanceStatement};
 
@@ -366,6 +367,7 @@ class Generator {
 
     const parameterName = "params";
     const parameter = hasReqOrBody ? `${parameterName}: ${queryTypeName}` : "";
+    const finalParameter = parameter ? `${parameter}, config?: AxiosRequestConfig` : "config?: AxiosRequestConfig";  
 
     const methodParameters =
       requestMethod !== Method.GET && hasReqOrBody
@@ -378,7 +380,7 @@ class Generator {
     const createdTime = new Date(interfaceData.add_time * 1000).toString();
     const tagList = interfaceData.tag.join(" ");
 
-    const defaultCallee = `${requestInstanceName}.${requestMethod.toLowerCase()}<${dataTypeName}>(${methodParameters})`;
+    const defaultCallee = `${requestInstanceName}.${requestMethod.toLowerCase()}<${dataTypeName}>(${methodParameters}, config)`;
 
     const callee =
       typeof renderServiceFuncReturn === "function"
@@ -398,7 +400,7 @@ class Generator {
        * @tag ${tagList}
        * @see ${link}
        */
-      export function ${functionName}(${parameter}) {
+      export function ${functionName}(${finalParameter}) {
         return ${callee};
       }
       \n
