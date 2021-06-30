@@ -63,7 +63,7 @@
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
     "rimraf": "^3.0.2",
-    "togo-np": "0.0.12",
+    "togo-np": "^1.0.0",
     "typescript": "^3.8.3"
   },
   "optionalDependencies": {
