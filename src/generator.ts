@@ -367,20 +367,27 @@ class Generator {
 
     const parameterName = "params";
     const parameter = hasReqOrBody ? `${parameterName}: ${queryTypeName}` : "";
-    const finalParameter = parameter ? `${parameter}, config?: AxiosRequestConfig` : "config?: AxiosRequestConfig";  
+    const finalParameter = parameter
+      ? `${parameter}, config?: AxiosRequestConfig`
+      : "config?: AxiosRequestConfig";
 
     const methodParameters =
       requestMethod !== Method.GET && hasReqOrBody
         ? interfaceData.req_body_type === RequestBodyType.form
-          ? `\`${queryPath}\`, null, { data: ${parameterName}, headers: { "Content-Type": "application/x-www-form-urlencoded" } }`
-          : `\`${queryPath}\`, null, { data: ${parameterName}}`
-        : `\`${queryPath}\``;
+          ? `\`${queryPath}\`, null, { data: ${parameterName}, headers: { "Content-Type": "application/x-www-form-urlencoded" }, ...config }`
+          : `\`${queryPath}\`, null, { data: ${parameterName}, ...config }`
+        : requestMethod === Method.GET ||
+          requestMethod === Method.DELETE ||
+          requestMethod === Method.HEAD ||
+          requestMethod === Method.OPTIONS
+        ? `\`${queryPath}\`, config`
+        : `\`${queryPath}\`, null, config`;
 
     const updatedTime = new Date(interfaceData.up_time * 1000).toString();
     const createdTime = new Date(interfaceData.add_time * 1000).toString();
     const tagList = interfaceData.tag.join(" ");
 
-    const defaultCallee = `${requestInstanceName}.${requestMethod.toLowerCase()}<${dataTypeName}>(${methodParameters}, config)`;
+    const defaultCallee = `${requestInstanceName}.${requestMethod.toLowerCase()}<${dataTypeName}>(${methodParameters})`;
 
     const callee =
       typeof renderServiceFuncReturn === "function"
