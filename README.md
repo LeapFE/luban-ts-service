@@ -36,7 +36,7 @@ type Config = {
   // 获取哪些分类；undefined或者空数组表示获取该项目的所有分类
   categories?: string[];
   // 每个分类对应的生成文件名，指定该项时应该与上面的 `categories` 中的项一一对应
-  // 当次配置的长度大于等于 2 且 n + 1 === n 时，n + 1 生成的内容将被追加到 n 中(n 是此处指定的第 n 个文件名)
+  // 当此配置的长度大于等于 2 且 n + 1 === n 时，n + 1 生成的内容将被追加到 n 中(n 是此处指定的第 n 个文件名)
   categoriesFileName?: string[];
   // 只输出 interface
   onlyInterface?: boolean;
